@@ -1,8 +1,12 @@
-# Markdown LaTeX Viewer
+# Chat2PDF
 
-A single-page Markdown editor that renders equations with KaTeX in real time. Type Markdown mixed with LaTeX on the left and see the formatted preview—including math blocks, tables, and code—on the right.
+A single-page Markdown editor that renders equations with KaTeX in real time. Paste ChatGPT conversations or other AI chat transcripts on the left, tweak the Markdown if needed, and see the formatted preview—including math blocks, tables, and code—on the right before exporting to PDF.
+
+## Demo
+- https://chat2pdf.net
 
 ## Features
+- ChatGPT conversation paste-in workflow with automatic Markdown/LaTeX normalization
 - Live Markdown preview with GitHub-flavored Markdown support
 - Automatic detection and wrapping of inline/block LaTeX expressions
 - KaTeX-powered math rendering with copy, paste, and clear shortcuts
@@ -12,8 +16,8 @@ A single-page Markdown editor that renders equations with KaTeX in real time. Ty
 ## Getting Started
 1. Clone the repository
    ```bash
-   git clone https://github.com/<your-username>/latex-viewer.git
-   cd latex-viewer
+   git clone https://github.com/SuzhoKevin/MarkdownViewer.git
+   cd MarkdownViewer
    ```
 2. Open `index.html` in your browser (double-click the file or use a local HTTP server).
 3. Start editing the left-hand textarea—rendered output updates instantly on the right.
