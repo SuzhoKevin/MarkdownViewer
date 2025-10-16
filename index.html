@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown LaTeX Viewer</title>
+  <title>Chat2PDF | Convert ChatGPT Chats to PDF</title>
+  <meta name="description" content="Chat2PDF lets you paste ChatGPT conversations or other AI dialogues, preview the formatting with Markdown and LaTeX support, and export PDF files for storage or printing.">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
   <style>
     :root {
@@ -28,6 +29,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .site-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: inherit;
     }
 
     .header-buttons {
@@ -340,7 +348,7 @@
 </head>
 <body>
   <header>
-    Markdown LaTeX Viewer
+    <h1 class="site-title">Chat2PDF · ChatGPT Chat to PDF Previewer</h1>
     <div class="header-buttons">
       <div class="font-size-controls">
         <button id="fontSizeDecBtn" title="Decrease font size">A-</button>
