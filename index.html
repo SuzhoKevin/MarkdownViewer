@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown LaTeX Viewer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+  <style>
+    :root {
+      color-scheme: light dark;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+
+    header {
+      padding: 12px 20px;
+      background: #2d2d2d;
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-buttons {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .font-size-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .font-size-controls button {
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s;
+      min-width: 32px;
+    }
+
+    .font-size-controls button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .font-size-controls button:active {
+      transform: scale(0.95);
+    }
+
+    #fontSizeDisplay {
+      color: white;
+      font-size: 13px;
+      min-width: 42px;
+      text-align: center;
+    }
+
+    .header-buttons > button {
+      padding: 8px 16px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .header-buttons > button:hover {
+      background: #357abd;
+    }
+
+    .header-buttons > button:active {
+      transform: scale(0.98);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .editor-container {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #e0e0e0;
+      background: #fafafa;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .editor-toolbar button {
+      padding: 6px 12px;
+      background: #fff;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .editor-toolbar button:hover {
+      background: #e8e8e8;
+      border-color: #999;
+    }
+
+    .editor-toolbar button:active {
+      transform: scale(0.98);
+    }
+
+    textarea {
+      flex: 1;
+      padding: 20px;
+      border: none;
+      resize: none;
+      font-size: 16px;
+      line-height: 1.5;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: #fafafa;
+      color: #333;
+    }
+
+    textarea:focus {
+      outline: none;
+      background: #fff;
+    }
+
+    #preview {
+      width: 50%;
+      height: 100%;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #222;
+      box-sizing: border-box;
+    }
+
+    #preview * {
+      box-sizing: border-box;
+    }
+
+    #preview h1,
+    #preview h2,
+    #preview h3 {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.3em;
+      margin-top: 1.5em;
+    }
+
+    #preview pre {
+      background: #f0f0f0;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    #preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 1em 0;
+      display: block;
+    }
+
+    #preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+      overflow-x: auto;
+      display: block;
+    }
+
+    #preview table thead {
+      background: #f5f5f5;
+    }
+
+    #preview table th,
+    #preview table td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    #preview table th {
+      font-weight: bold;
+      background: #e8e8e8;
+    }
+
+    #preview table tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    #preview table tr:hover {
+      background: #f0f0f0;
+    }
+
+    #preview .math-block {
+      margin: 1em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+    }
+
+    #preview .math-inline {
+      display: inline;
+    }
+
+    .katex-display {
+      margin: 0.5em 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    #preview .katex {
+      max-width: 100%;
+    }
+
+    /* Print styles */
+    @media print {
+      @page {
+        margin: 0.5in;
+        size: auto;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        height: auto;
+        overflow: visible;
+      }
+
+      header {
+        display: none !important;
+      }
+
+      main {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+
+      .editor-container {
+        display: none !important;
+      }
+
+      textarea {
+        display: none !important;
+      }
+
+      .editor-toolbar {
+        display: none !important;
+      }
+
+      #preview {
+        width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+        color: #000 !important;
+        background: #fff !important;
+        overflow: visible !important;
+        page-break-after: auto;
+      }
+
+      #preview h1,
+      #preview h2,
+      #preview h3 {
+        page-break-after: avoid;
+      }
+
+      #preview .math-block,
+      #preview .katex-display {
+        page-break-inside: avoid;
+        margin: 1em 0;
+      }
+
+      #preview p,
+      #preview ul,
+      #preview ol {
+        page-break-inside: avoid;
+        orphans: 3;
+        widows: 3;
+      }
+
+      #preview table {
+        page-break-inside: avoid;
+        display: table !important;
+        width: 100%;
+      }
+
+      #preview table th,
+      #preview table td {
+        border: 1px solid #000 !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
+      }
+
+      .editor-container,
+      #preview {
+        width: 100%;
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Markdown LaTeX Viewer
+    <div class="header-buttons">
+      <div class="font-size-controls">
+        <button id="fontSizeDecBtn" title="Decrease font size">A-</button>
+        <span id="fontSizeDisplay">100%</span>
+        <button id="fontSizeIncBtn" title="Increase font size">A+</button>
+      </div>
+      <button id="printBtn" title="Print preview content">🖨️ Print</button>
+    </div>
+  </header>
+  <main>
+    <div class="editor-container">
+      <div class="editor-toolbar">
+        <button id="copyBtn" title="Copy to clipboard">📄 Copy</button>
+        <button id="pasteBtn" title="Paste from clipboard">📋 Paste</button>
+        <button id="clearBtn" title="Clear editor">🗑️ Clear</button>
+      </div>
+      <textarea id="editor" placeholder="Enter Markdown and LaTeX here (e.g., $E=mc^2$ or $$\\int_0^1 x^2 dx$$)"></textarea>
+    </div>
+    <div id="preview"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+
+    const defaultContent = [
+      '# Welcome to Markdown LaTeX Viewer',
+      '',
+      'Type on the left, preview on the right.',
+      '',
+      '## Examples',
+      '',
+      '### Inline Math',
+      '- Mass-energy equivalence: $E = mc^2$',
+      '- Pythagorean theorem: $a^2 + b^2 = c^2$',
+      '- Sum notation: $\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$',
+      '',
+      '### Display Math',
+      '',
+      'Gaussian integral:',
+      '$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$',
+      '',
+      'Quadratic formula:',
+      '$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$',
+      '',
+      'Matrix example:',
+      '$$\\begin{pmatrix}',
+      'a & b \\\\\\\\',
+      'c & d',
+      '\\end{pmatrix}$$',
+      '',
+      '### Markdown Features',
+      '- **Bold text**',
+      '- *Italic text*',
+      '- `Code text`'
+    ].join('\n');
+
+    const normalizeMathInput = (raw) => {
+      const lines = raw.split('\n');
+      let inFence = false;
+      let inBlockMath = false;
+      let blockBuffer = [];
+
+      const latexHint = (text) => {
+        if (!text) return false;
+        const trimmed = text.trim();
+        if (!trimmed) return false;
+        if (/[\\^_|]/.test(trimmed)) return true;
+        if (/(\\\\|\\frac|\\sqrt|\\sin|\\cos|\\tan|\\cot|\\log|\\ln|\\pi|\\theta|\\cdot|\\boxed|\\int|\\sum|\\prod|\\lim)/i.test(trimmed)) return true;
+        if (/[=<>]/.test(trimmed)) return true;
+        if (trimmed.includes('|')) return true;
+        return false;
+      };
+
+      const convertInline = (line) => {
+        let result = '';
+        for (let i = 0; i < line.length; i += 1) {
+          const char = line[i];
+          if (char === '(') {
+            // Check if this is part of image syntax ![...](...) or link syntax [...](...)
+            // Look back to see if there's a ] just before
+            const prevChar = i > 0 ? line[i - 1] : '';
+            if (prevChar === ']') {
+              // This is likely [...](...) link or image syntax, skip it
+              result += char;
+              continue;
+            }
+
+            let depth = 1;
+            let j = i + 1;
+            while (j < line.length && depth > 0) {
+              if (line[j] === '(') depth += 1;
+              else if (line[j] === ')') depth -= 1;
+              j += 1;
+            }
+
+            if (depth === 0) {
+              const content = line.slice(i + 1, j - 1);
+              if (latexHint(content)) {
+                result += `$${content}$`;
+                i = j - 1;
+                continue;
+              }
+            }
+          }
+          result += char;
+        }
+        return result;
+      };
+
+      const transformed = lines.map((line) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('```')) {
+          inFence = !inFence;
+          return line;
+        }
+        if (inFence) return line;
+        if (trimmed === '[') {
+          inBlockMath = true;
+          blockBuffer = [];
+          return null;
+        }
+        if (trimmed === ']') {
+          inBlockMath = false;
+          let content = blockBuffer.join('\n');
+          if (content.includes('\\begin{cases}')) {
+            content = content.replace(/,\\\s*/g, '\\\\\\\\\n');
+          }
+          content = content.trim();
+          return `$$\n${content}\n$$`;
+        }
+        if (trimmed === '$$') {
+          return line;
+        }
+        if (inBlockMath) {
+          blockBuffer.push(line);
+          return null;
+        }
+        return convertInline(line);
+      });
+
+      const joined = transformed.filter(Boolean).join('\n');
+      return joined.replace(/(^|[^\\])\\([0-9.,-])/g, (_, prefix, char) => `${prefix}${char}`);
+    };
+
+    const render = (value) => {
+      const normalized = normalizeMathInput(value);
+
+      // Protect LaTeX formulas from being broken by Markdown parser
+      const mathBlocks = [];
+      let protected = normalized;
+
+      // First protect display math $$...$$
+      protected = protected.replace(/\$\$([\s\S]+?)\$\$/g, (match, content) => {
+        const index = mathBlocks.length;
+        mathBlocks.push({ type: 'block', content: content.trim() });
+        return `XMATHBLOCKX${index}XMATHBLOCKX`;
+      });
+
+      // Then protect inline math $...$ (but not if preceded by !)
+      // This avoids matching image syntax like ![alt]($url$)
+      protected = protected.replace(/(?<![\!])\$([^\$\n]+?)\$/g, (match, content) => {
+        const index = mathBlocks.length;
+        mathBlocks.push({ type: 'inline', content });
+        return `XMATHINLINEX${index}XMATHINLINEX`;
+      });
+
+
+      // Fix tables: ensure blank lines before and after tables
+      let lines = protected.split('\n');
+      const fixedLines = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // Check if current line starts a table
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          const prevLine = i > 0 ? lines[i - 1].trim() : '';
+
+          // Add blank line before table if previous line is not blank and not a table row
+          if (prevLine && !prevLine.startsWith('|')) {
+            fixedLines.push('');
+          }
+        }
+
+        fixedLines.push(line);
+      }
+
+      protected = fixedLines.join('\n');
+
+      // Fix --- being interpreted as setext heading
+      // Ensure --- is on its own line with blank lines around it
+      protected = protected.replace(/^(---+)$/gm, '\n$1\n');
+
+      // Configure marked options
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        tables: true,
+        pedantic: false,
+        headerIds: false,
+        mangle: false
+      });
+
+      // Render Markdown
+      let html = marked.parse(protected);
+
+      // Restore LaTeX formulas
+      html = html.replace(/XMATHBLOCKX(\d+)XMATHBLOCKX/g, (match, index) => {
+        const block = mathBlocks[parseInt(index)];
+        if (block && block.content) {
+          return `$$${block.content}$$`;
+        }
+        return match;
+      });
+
+      html = html.replace(/XMATHINLINEX(\d+)XMATHINLINEX/g, (match, index) => {
+        const block = mathBlocks[parseInt(index)];
+        if (block && block.content) {
+          return `$${block.content}$`;
+        }
+        return match;
+      });
+
+      preview.innerHTML = html;
+
+      // Render LaTeX
+      renderMathInElement(preview, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false,
+        trust: true
+      });
+    };
+
+    editor.addEventListener('input', (event) => {
+      render(event.target.value);
+    });
+
+    editor.value = defaultContent;
+    render(editor.value);
+
+    // Font size control
+    const fontSizeIncBtn = document.getElementById('fontSizeIncBtn');
+    const fontSizeDecBtn = document.getElementById('fontSizeDecBtn');
+    const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+
+    // Load saved font size from localStorage, default 100%
+    let fontSize = parseInt(localStorage.getItem('previewFontSize') || '100');
+
+    const updateFontSize = () => {
+      preview.style.fontSize = fontSize + '%';
+      fontSizeDisplay.textContent = fontSize + '%';
+      localStorage.setItem('previewFontSize', fontSize);
+    };
+
+    // Initialize font size
+    updateFontSize();
+
+    fontSizeIncBtn.addEventListener('click', () => {
+      if (fontSize < 200) {
+        fontSize += 10;
+        updateFontSize();
+      }
+    });
+
+    fontSizeDecBtn.addEventListener('click', () => {
+      if (fontSize > 50) {
+        fontSize -= 10;
+        updateFontSize();
+      }
+    });
+
+    // Print functionality
+    const printBtn = document.getElementById('printBtn');
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    // Copy functionality
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(editor.value);
+        // Visual feedback
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 1500);
+      } catch (err) {
+        alert('Unable to copy to clipboard. Please ensure clipboard access is granted.\n\nYou can also use Ctrl+A and Ctrl+C (or Cmd+A and Cmd+C) to copy manually.');
+      }
+    });
+
+    // Paste functionality
+    const pasteBtn = document.getElementById('pasteBtn');
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        editor.value = text;
+        render(text);
+      } catch (err) {
+        alert('Unable to read clipboard content. Please ensure clipboard access is granted.\n\nYou can also use Ctrl+V (or Cmd+V) to paste directly.');
+      }
+    });
+
+    // Clear functionality
+    const clearBtn = document.getElementById('clearBtn');
+    clearBtn.addEventListener('click', () => {
+      editor.value = '';
+      render('');
+    });
+  </script>
+</body>
+</html>
