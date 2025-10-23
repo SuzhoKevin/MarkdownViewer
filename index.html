@@ -8,67 +8,151 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
   <style>
     :root {
-      color-scheme: light dark;
+      --primary-color: #0066ff;
+      --primary-hover: #0052cc;
+      --bg-light: #f5f7fa;
+      --bg-card: #ffffff;
+      --text-primary: #1a202c;
+      --text-secondary: #4a5568;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --code-bg: #f6f8fa;
+      --code-text: #e83e8c;
+      --editor-bg: #ffffff;
+      --toolbar-bg: #f6f8fa;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #3b82f6;
+      --primary-hover: #2563eb;
+      --bg-light: #0f172a;
+      --bg-card: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.5);
+      --code-bg: #0f172a;
+      --code-text: #f472b6;
+      --editor-bg: #1e293b;
+      --toolbar-bg: #1a2332;
     }
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #f5f5f5;
+      background: var(--bg-light);
       overflow: hidden;
+      transition: background 0.3s ease;
     }
 
     header {
-      padding: 12px 20px;
-      background: #2d2d2d;
-      color: #fff;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      color: var(--text-primary);
       font-size: 1.1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
     }
 
     .site-title {
       margin: 0;
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       font-weight: 600;
-      color: inherit;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s ease;
+    }
+
+    .site-title::before {
+      content: "📄";
+      font-size: 1.5rem;
+    }
+
+    .site-description {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-left: 4px;
     }
 
     .header-buttons {
       display: flex;
-      gap: 15px;
+      gap: 12px;
       align-items: center;
+    }
+
+    /* Dark mode toggle button */
+    .theme-toggle {
+      padding: 8px 12px !important;
+      background: var(--bg-light) !important;
+      color: var(--text-primary);
+      border: 1px solid var(--border-color) !important;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      box-shadow: none !important;
+    }
+
+    .theme-toggle:hover {
+      background: var(--border-color) !important;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm) !important;
+    }
+
+    .theme-toggle:active {
+      transform: translateY(0);
     }
 
     .font-size-controls {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
+      padding: 6px 12px;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
 
     .font-size-controls button {
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 3px;
+      padding: 6px 12px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
-      font-weight: bold;
-      transition: all 0.2s;
-      min-width: 32px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      min-width: 36px;
     }
 
     .font-size-controls button:hover {
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.5);
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
     }
 
     .font-size-controls button:active {
@@ -76,25 +160,29 @@
     }
 
     #fontSizeDisplay {
-      color: white;
+      color: var(--text-secondary);
       font-size: 13px;
+      font-weight: 600;
       min-width: 42px;
       text-align: center;
     }
 
     .header-buttons > button {
-      padding: 8px 16px;
-      background: #4a90e2;
+      padding: 10px 20px;
+      background: var(--primary-color);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.2s;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
     }
 
     .header-buttons > button:hover {
-      background: #357abd;
+      background: var(--primary-hover);
+      box-shadow: var(--shadow-md);
     }
 
     .header-buttons > button:active {
@@ -105,43 +193,52 @@
       flex: 1;
       display: flex;
       overflow: hidden;
-      background: #fff;
+      background: var(--bg-light);
+      gap: 16px;
+      padding: 16px;
     }
 
     .editor-container {
       width: 50%;
       display: flex;
       flex-direction: column;
-      border-right: 1px solid #e0e0e0;
-      background: #fafafa;
+      border-radius: 12px;
+      background: var(--bg-card);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
     }
 
     .editor-toolbar {
       display: flex;
-      gap: 8px;
-      padding: 10px;
-      background: #f0f0f0;
-      border-bottom: 1px solid #e0e0e0;
+      gap: 10px;
+      padding: 14px 16px;
+      background: var(--toolbar-bg);
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.3s ease;
     }
 
     .editor-toolbar button {
-      padding: 6px 12px;
-      background: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
-      transition: all 0.2s;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
     }
 
     .editor-toolbar button:hover {
-      background: #e8e8e8;
-      border-color: #999;
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+      box-shadow: var(--shadow-md);
     }
 
     .editor-toolbar button:active {
-      transform: scale(0.98);
+      transform: translateY(0);
     }
 
     textarea {
@@ -149,28 +246,54 @@
       padding: 20px;
       border: none;
       resize: none;
-      font-size: 16px;
-      line-height: 1.5;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      background: #fafafa;
-      color: #333;
+      font-size: 15px;
+      line-height: 1.6;
+      font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Droid Sans Mono", "Source Code Pro", monospace;
+      background: var(--editor-bg);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     textarea:focus {
       outline: none;
-      background: #fff;
+    }
+
+    textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
     }
 
     #preview {
       width: 50%;
       height: 100%;
-      padding: 20px;
+      padding: 24px;
       overflow-y: auto;
       overflow-x: hidden;
       font-size: 16px;
-      line-height: 1.6;
-      color: #222;
+      line-height: 1.7;
+      color: var(--text-primary);
       box-sizing: border-box;
+      background: var(--bg-card);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    #preview::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #preview::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #preview::-webkit-scrollbar-thumb {
+      background: #cbd5e0;
+      border-radius: 4px;
+    }
+
+    #preview::-webkit-scrollbar-thumb:hover {
+      background: #a0aec0;
     }
 
     #preview * {
@@ -180,56 +303,116 @@
     #preview h1,
     #preview h2,
     #preview h3 {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 0.3em;
-      margin-top: 1.5em;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.4em;
+      margin-top: 1.8em;
+      margin-bottom: 1em;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    #preview h1 {
+      color: var(--text-primary);
+      font-size: 2em;
+    }
+
+    #preview h2 {
+      color: var(--text-primary);
+      font-size: 1.5em;
+    }
+
+    #preview h3 {
+      color: var(--text-primary);
+      font-size: 1.25em;
+      border-bottom: 1px solid var(--border-color);
     }
 
     #preview pre {
-      background: #f0f0f0;
-      padding: 12px;
-      border-radius: 6px;
+      background: linear-gradient(135deg, #f6f8fa 0%, #f0f2f5 100%);
+      padding: 16px;
+      border-radius: 10px;
       overflow-x: auto;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    #preview code {
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: var(--code-text);
+      font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+    }
+
+    #preview pre code {
+      background: transparent;
+      padding: 0;
+      color: var(--text-primary);
     }
 
     #preview img {
       max-width: 100%;
       height: auto;
-      border-radius: 4px;
-      margin: 1em 0;
+      border-radius: 10px;
+      margin: 1.5em 0;
       display: block;
+      box-shadow: var(--shadow-md);
     }
 
     #preview table {
       border-collapse: collapse;
       width: 100%;
-      margin: 1em 0;
+      margin: 1.5em 0;
       overflow-x: auto;
       display: block;
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
     }
 
     #preview table thead {
-      background: #f5f5f5;
+      background: var(--text-primary);
     }
 
     #preview table th,
     #preview table td {
-      border: 1px solid #ddd;
-      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
       text-align: left;
     }
 
     #preview table th {
-      font-weight: bold;
-      background: #e8e8e8;
+      font-weight: 600;
+      color: white;
+      background: transparent;
     }
 
     #preview table tr:nth-child(even) {
-      background: #fafafa;
+      background: #f8f9fa;
     }
 
     #preview table tr:hover {
-      background: #f0f0f0;
+      background: #e8eaf0;
+      transition: background 0.2s;
+    }
+
+    #preview blockquote {
+      border-left: 4px solid var(--primary-color);
+      margin: 1.5em 0;
+      padding: 1em 1.5em;
+      background: rgba(0, 102, 255, 0.04);
+      border-radius: 0 8px 8px 0;
+    }
+
+    #preview a {
+      color: var(--primary-color);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    #preview a:hover {
+      border-bottom-color: var(--primary-color);
     }
 
     #preview .math-block {
@@ -253,6 +436,137 @@
       max-width: 100%;
     }
 
+    /* Footer styles */
+    footer {
+      padding: 12px 24px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      text-align: center;
+      font-size: 13px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s;
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      padding: 36px;
+      border-radius: 16px;
+      max-width: 650px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      margin: 20px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-30px) scale(0.95);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--text-primary);
+      border-bottom: 3px solid var(--primary-color);
+      padding-bottom: 12px;
+      font-weight: 700;
+      font-size: 1.8em;
+    }
+
+    .modal-content h3 {
+      color: var(--primary-color);
+      margin-top: 24px;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+
+    .modal-content p {
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin: 12px 0;
+    }
+
+    .modal-content strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .modal-content ul {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .modal-content li {
+      margin: 8px 0;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .close-modal {
+      float: right;
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      cursor: pointer;
+      line-height: 20px;
+      transition: all 0.2s;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-modal:hover {
+      color: var(--primary-color);
+      background: rgba(0, 102, 255, 0.1);
+      transform: rotate(90deg);
+    }
+
     /* Print styles */
     @media print {
       @page {
@@ -269,7 +583,7 @@
         overflow: visible;
       }
 
-      header {
+      header, footer {
         display: none !important;
       }
 
@@ -336,6 +650,8 @@
     @media (max-width: 900px) {
       main {
         flex-direction: column;
+        padding: 12px;
+        gap: 12px;
       }
 
       .editor-container,
@@ -343,32 +659,131 @@
         width: 100%;
         height: 50%;
       }
+
+      .site-title {
+        font-size: 1rem;
+      }
+
+      .site-description {
+        display: none;
+      }
+
+      .header-buttons {
+        gap: 10px;
+      }
+
+      .font-size-controls {
+        padding: 4px 8px;
+      }
+
+      .header-buttons > button {
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+    }
+
+    /* Loading animation for smooth interactions */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1 class="site-title">Chat2PDF · ChatGPT Chat to PDF Previewer</h1>
+    <h1 class="site-title">
+      Chat2PDF
+      <span class="site-description">Convert AI chats to PDF with Markdown & LaTeX support</span>
+    </h1>
     <div class="header-buttons">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+        <span id="themeIcon">🌙</span>
+      </button>
       <div class="font-size-controls">
         <button id="fontSizeDecBtn" title="Decrease font size">A-</button>
         <span id="fontSizeDisplay">100%</span>
         <button id="fontSizeIncBtn" title="Increase font size">A+</button>
       </div>
-      <button id="printBtn" title="Print preview content">🖨️ Print</button>
+      <button id="printBtn" title="Print preview content">Print</button>
     </div>
   </header>
   <main>
     <div class="editor-container">
       <div class="editor-toolbar">
-        <button id="copyBtn" title="Copy to clipboard">📄 Copy</button>
-        <button id="pasteBtn" title="Paste from clipboard">📋 Paste</button>
-        <button id="clearBtn" title="Clear editor">🗑️ Clear</button>
+        <button id="copyBtn" title="Copy to clipboard">Copy</button>
+        <button id="pasteBtn" title="Paste from clipboard">Paste</button>
+        <button id="clearBtn" title="Clear editor">Clear</button>
       </div>
-      <textarea id="editor" placeholder="Enter Markdown and LaTeX here (e.g., $E=mc^2$ or $$\\int_0^1 x^2 dx$$)"></textarea>
+      <textarea id="editor" placeholder="Enter Markdown and LaTeX here (e.g., $E=mc^2$ or $$\int_0^1 x^2 dx$$)"></textarea>
     </div>
     <div id="preview"></div>
   </main>
+
+  <footer>
+    <span>&copy; 2025 Chat2PDF. All rights reserved. | </span>
+    <a id="privacyLink">Privacy Policy</a>
+    <span> | </span>
+    <a href="https://github.com/SuzhoKevin/MarkdownViewer" target="_blank" rel="noopener noreferrer">GitHub</a>
+  </footer>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacyModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Privacy Policy</h2>
+
+      <p><strong>Last Updated:</strong> January 2025</p>
+
+      <h3>1. Overview</h3>
+      <p>Chat2PDF is a client-side web application that values your privacy. This privacy policy explains how we handle your information.</p>
+
+      <h3>2. Data Collection</h3>
+      <p>Chat2PDF operates entirely in your browser and does not collect, transmit, or store any of your personal data on external servers.</p>
+
+      <h3>3. Local Storage</h3>
+      <p>The application uses browser localStorage to save:</p>
+      <ul>
+        <li>Your font size preferences</li>
+      </ul>
+      <p>This data remains on your device and is never transmitted to any server.</p>
+
+      <h3>4. Content Processing</h3>
+      <p>All content you enter, edit, or preview in Chat2PDF:</p>
+      <ul>
+        <li>Is processed entirely in your browser</li>
+        <li>Is never uploaded to any server</li>
+        <li>Remains completely private and under your control</li>
+      </ul>
+
+      <h3>5. Third-Party Services</h3>
+      <p>Chat2PDF loads the following libraries from CDNs for functionality:</p>
+      <ul>
+        <li>Marked.js (Markdown parsing)</li>
+        <li>KaTeX (mathematical formula rendering)</li>
+      </ul>
+      <p>These libraries are loaded for technical functionality only and do not collect your data.</p>
+
+      <h3>6. Cookies</h3>
+      <p>This application does not use cookies.</p>
+
+      <h3>7. Your Rights</h3>
+      <p>Since all data is stored locally on your device, you have full control:</p>
+      <ul>
+        <li>You can clear localStorage at any time through your browser settings</li>
+        <li>You can delete your content by clearing the editor or closing the browser</li>
+      </ul>
+
+      <h3>8. Changes to This Policy</h3>
+      <p>We may update this privacy policy from time to time. Any changes will be reflected on this page.</p>
+
+      <h3>9. Contact</h3>
+      <p>If you have questions about this privacy policy, please visit our GitHub repository.</p>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
@@ -597,6 +1012,32 @@
     editor.value = defaultContent;
     render(editor.value);
 
+    // Dark mode toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const htmlElement = document.documentElement;
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+      htmlElement.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+
+      if (currentTheme === 'dark') {
+        htmlElement.removeAttribute('data-theme');
+        themeIcon.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlElement.setAttribute('data-theme', 'dark');
+        themeIcon.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
     // Font size control
     const fontSizeIncBtn = document.getElementById('fontSizeIncBtn');
     const fontSizeDecBtn = document.getElementById('fontSizeDecBtn');
@@ -667,6 +1108,33 @@
     clearBtn.addEventListener('click', () => {
       editor.value = '';
       render('');
+    });
+
+    // Privacy Policy Modal
+    const privacyModal = document.getElementById('privacyModal');
+    const privacyLink = document.getElementById('privacyLink');
+    const closeModal = document.querySelector('.close-modal');
+
+    privacyLink.addEventListener('click', () => {
+      privacyModal.classList.add('show');
+    });
+
+    closeModal.addEventListener('click', () => {
+      privacyModal.classList.remove('show');
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener('click', (event) => {
+      if (event.target === privacyModal) {
+        privacyModal.classList.remove('show');
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && privacyModal.classList.contains('show')) {
+        privacyModal.classList.remove('show');
+      }
     });
   </script>
 </body>
